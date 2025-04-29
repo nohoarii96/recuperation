@@ -1,25 +1,53 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Scan QR Code</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Réception QR Code</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    #qr-value {
+      font-size: 20px;
+      margin: 15px 0;
+      padding: 12px;
+      background-color: #e1ffe1;
+      border-radius: 8px;
+      display: inline-block;
+    }
+  </style>
 </head>
 <body>
-  <h2>Scanner un QR Code</h2>
-  <div id="reader" style="width:300px;"></div>
-  <p>Valeur du QR : <span id="result"></span></p>
+  <h1>Donnée QR Code Reçue</h1>
+  <div id="qr-value">Aucune donnée reçue</div>
 
   <script>
-    function onScanSuccess(decodedText, decodedResult) {
-      document.getElementById("result").innerText = decodedText;
-      html5QrcodeScanner.clear(); // Arrête le scanner une fois le QR détecté
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
     }
 
-    const html5QrcodeScanner = new Html5QrcodeScanner(
-      "reader", { fps: 10, qrbox: 250 });
+    function updateDisplay(qrValue) {
+      document.getElementById("qr-value").innerText = qrValue;
+      localStorage.setItem("last_qr", qrValue);
+    }
 
-    html5QrcodeScanner.render(onScanSuccess);
+    const qr = getQueryParam("qr");
+    if (qr) {
+      updateDisplay(qr);
+    } else {
+      const savedQr = localStorage.getItem("last_qr");
+      if (savedQr) {
+        document.getElementById("qr-value").innerText = savedQr;
+      }
+    }
   </script>
 </body>
 </html>

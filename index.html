@@ -36,16 +36,16 @@
 
     function updateDisplay(qrValue) {
       document.getElementById("qr-value").innerText = qrValue;
-      localStorage.setItem("last_qr", qrValue);
+      localStorage.setItem("last_qr", qrValue); // Enregistre la dernière valeur dans localStorage
     }
 
     const qr = getQueryParam("qr");
     if (qr) {
-      updateDisplay(qr);
+      updateDisplay(qr); // Met à jour l'affichage avec la valeur du QR code reçue
     } else {
       const savedQr = localStorage.getItem("last_qr");
       if (savedQr) {
-        document.getElementById("qr-value").innerText = savedQr;
+        document.getElementById("qr-value").innerText = savedQr; // Affiche la dernière valeur en cas d'absence du paramètre
       }
     }
   </script>

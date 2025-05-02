@@ -15,23 +15,43 @@
       color: #333;
     }
     #qr-value {
-      font-size: 20px;
+      font-size: 18px;
       margin: 15px 0;
-      padding: 12px;
+      padding: 10px;
       background-color: #e1ffe1;
-      border-radius: 8px;
       display: inline-block;
+      border-radius: 8px;
     }
-    #timestamp {
-      margin-top: 10px;
-      color: #666;
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+      max-width: 500px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      font-size: 14px;
+    }
+    th {
+      background-color: #eee;
     }
   </style>
 </head>
 <body>
-  <h1>Donnée QR Code Reçue</h1>
+  <h1>Donnée reçue</h1>
   <div id="qr-value">Aucune donnée reçue</div>
-  <div id="timestamp"></div>
+
+  <h2>Historique</h2>
+  <table id="history-table">
+    <thead>
+      <tr>
+        <th>QR Code</th>
+        <th>Date/Heure</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
   <script>
     function getQueryParam(name) {
@@ -39,28 +59,28 @@
       return urlParams.get(name);
     }
 
-    function updateDisplay(qrValue) {
-      const now = new Date().toLocaleString();
-      document.getElementById("qr-value").innerText = qrValue;
-      document.getElementById("timestamp").innerText = "Reçu le : " + now;
+    function saveToHistory(qrValue) {
+      const history = JSON.parse(localStorage.getItem("qr_history") || "[]");
+      history.unshift({ value: qrValue, time: new Date().toLocaleString() });
+      localStorage.setItem("qr_history", JSON.stringify(history));
+    }
 
-      // Sauvegarde en localStorage
-      localStorage.setItem("last_qr", qrValue);
-      localStorage.setItem("last_qr_time", now);
+    function renderHistory() {
+      const tbody = document.querySelector("#history-table tbody");
+      const history = JSON.parse(localStorage.getItem("qr_history") || "[]");
+      tbody.innerHTML = "";
+      history.forEach(entry => {
+        const row = `<tr><td>${entry.value}</td><td>${entry.time}</td></tr>`;
+        tbody.insertAdjacentHTML("beforeend", row);
+      });
     }
 
     const qr = getQueryParam("qr");
     if (qr) {
-      updateDisplay(qr);
-    } else {
-      // Si aucun QR dans l'URL, récupérer la dernière valeur enregistrée
-      const savedQr = localStorage.getItem("last_qr");
-      const savedTime = localStorage.getItem("last_qr_time");
-      if (savedQr) {
-        document.getElementById("qr-value").innerText = savedQr;
-        document.getElementById("timestamp").innerText = "Dernier reçu : " + savedTime;
-      }
+      document.getElementById("qr-value").innerText = qr;
+      saveToHistory(qr);
     }
+    renderHistory();
   </script>
 </body>
 </html>

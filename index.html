@@ -11,9 +11,6 @@
       padding: 20px;
       background-color: #f4f4f4;
     }
-    h1 {
-      color: #333;
-    }
     #qr-value {
       font-size: 18px;
       margin: 15px 0;
@@ -40,7 +37,7 @@
 </head>
 <body>
   <h1>Donnée reçue</h1>
-  <div id="qr-value">Aucune donnée reçue</div>
+  <div id="qr-value">Aucune donnée</div>
 
   <h2>Historique</h2>
   <table id="history-table">
@@ -54,14 +51,11 @@
   </table>
 
   <script>
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
+    const value = sessionStorage.getItem("qr_value");
 
-    function saveToHistory(qrValue) {
+    function saveToHistory(qr) {
       const history = JSON.parse(localStorage.getItem("qr_history") || "[]");
-      history.unshift({ value: qrValue, time: new Date().toLocaleString() });
+      history.unshift({ value: qr, time: new Date().toLocaleString() });
       localStorage.setItem("qr_history", JSON.stringify(history));
     }
 
@@ -75,11 +69,12 @@
       });
     }
 
-    const qr = getQueryParam("qr");
-    if (qr) {
-      document.getElementById("qr-value").innerText = qr;
-      saveToHistory(qr);
+    if (value) {
+      document.getElementById("qr-value").innerText = value;
+      saveToHistory(value);
+      sessionStorage.removeItem("qr_value"); // pour éviter d'afficher à nouveau au rechargement
     }
+
     renderHistory();
   </script>
 </body>

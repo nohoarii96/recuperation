@@ -22,11 +22,16 @@
       border-radius: 8px;
       display: inline-block;
     }
+    #timestamp {
+      margin-top: 10px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
   <h1>Donnée QR Code Reçue</h1>
   <div id="qr-value">Aucune donnée reçue</div>
+  <div id="timestamp"></div>
 
   <script>
     function getQueryParam(name) {
@@ -35,17 +40,25 @@
     }
 
     function updateDisplay(qrValue) {
+      const now = new Date().toLocaleString();
       document.getElementById("qr-value").innerText = qrValue;
+      document.getElementById("timestamp").innerText = "Reçu le : " + now;
+
+      // Sauvegarde en localStorage
       localStorage.setItem("last_qr", qrValue);
+      localStorage.setItem("last_qr_time", now);
     }
 
     const qr = getQueryParam("qr");
     if (qr) {
       updateDisplay(qr);
     } else {
+      // Si aucun QR dans l'URL, récupérer la dernière valeur enregistrée
       const savedQr = localStorage.getItem("last_qr");
+      const savedTime = localStorage.getItem("last_qr_time");
       if (savedQr) {
         document.getElementById("qr-value").innerText = savedQr;
+        document.getElementById("timestamp").innerText = "Dernier reçu : " + savedTime;
       }
     }
   </script>
